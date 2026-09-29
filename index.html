@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusOS — Autonomous Grievance & Accountability System</title>
+  <meta name="description" content="CampusOS is an autonomous multi-agent system that intakes, classifies, routes, and self-escalates campus grievances — end-to-end, no human babysitting required." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- ═══════════════ TOPBAR ═══════════════ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div>
+        <div class="topbar-institution">RNS Institute of Technology · Bangalore</div>
+        <div class="topbar-logo">
+          <span class="topbar-logo-dot"></span>
+          CampusOS
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="backend-status" id="backend-status">Checking backend…</span>
+      <div class="sla-toggle-wrap">
+        <label class="toggle" title="Toggle Demo mode (30s SLA) vs Production (24h SLA)">
+          <input type="checkbox" id="sla-toggle" checked />
+          <span class="toggle-slider"></span>
+        </label>
+        <span id="sla-label">Demo mode · SLA 30s</span>
+      </div>
+      <button class="btn-clear" id="btn-clear" title="Clear all ticket data">Reset data</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════ STATS BAR ═══════════════ -->
+  <section class="stats-bar" aria-label="Dashboard statistics">
+    <div class="stat-card">
+      <div class="stat-label">Open</div>
+      <div class="stat-value" id="stat-open">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Auto-escalated</div>
+      <div class="stat-value" id="stat-escalated">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Resolved</div>
+      <div class="stat-value" id="stat-resolved">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total</div>
+      <div class="stat-value" id="stat-total">0</div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ MAIN GRID ═══════════════ -->
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <main class="left-col">
+
+      <!-- INTAKE AGENT -->
+      <section class="panel intake-panel" aria-labelledby="intake-heading">
+        <div class="panel-header">
+          <h1 class="panel-title" id="intake-heading">
+            <span class="panel-title-icon">✦</span>
+            Intake Agent
+          </h1>
+        </div>
+        <p class="intake-subtitle">
+          Write a complaint the way a resident actually would. The agent reasons about what it means — it never keyword-matches.
+        </p>
+        <form class="intake-form" id="complaint-form" novalidate>
+          <textarea
+            id="complaint-text"
+            placeholder="Describe the issue…"
+            rows="3"
+            aria-label="Complaint description"
+            required
+          ></textarea>
+          <div class="chips-wrap" id="example-chips" aria-label="Example complaints"></div>
+          <div class="intake-row">
+            <input
+              type="text"
+              id="complaint-name"
+              placeholder="Your name (optional)"
+              aria-label="Your name"
+            />
+            <select id="complaint-location" aria-label="Location">
+              <option value="">Select location…</option>
+              <option>Block A</option>
+              <option>Block B</option>
+              <option>Block C</option>
+              <option>Block D</option>
+              <option>Main Mess</option>
+              <option>Hostel 1</option>
+              <option>Hostel 2</option>
+              <option>Common Room</option>
+              <option>Library</option>
+              <option>Academic Block</option>
+            </select>
+            <button type="submit" class="btn-file" id="btn-file">⊳ File complaint</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- LIVE TICKETS -->
+      <section aria-labelledby="live-heading">
+        <div class="live-header">
+          <h2 class="live-title" id="live-heading">Live Tickets</h2>
+          <span class="in-flight-badge" id="in-flight-count">All clear</span>
+        </div>
+        <div id="live-tickets">
+          <div class="empty-state">✓ No open tickets — all quiet on campus.</div>
+        </div>
+        <div id="closed-tickets"></div>
+      </section>
+
+    </main>
+
+    <!-- RIGHT COLUMN -->
+    <aside class="right-col" aria-label="Sidebar panels">
+
+      <!-- ACCOUNTABILITY SCORECARD -->
+      <div class="right-panel" role="region" aria-labelledby="scorecard-heading">
+        <div class="right-panel-title" id="scorecard-heading">
+          <span style="color:var(--cyan)">◈</span> Accountability Scorecard
+        </div>
+        <p class="right-panel-subtitle">
+          Response performance per department — the data no campus currently has.
+        </p>
+        <div id="scorecard-rows">
+          <div class="scorecard-empty">No tickets yet — file a complaint to populate.</div>
+        </div>
+      </div>
+
+      <!-- INSIGHT AGENT -->
+      <div class="right-panel" role="region" aria-labelledby="insight-heading">
+        <div class="insight-header-row">
+          <div class="right-panel-title" id="insight-heading">
+            <span style="color:var(--orange)">◉</span> Insight Agent
+          </div>
+          <button class="btn-digest" id="btn-digest" aria-label="Run insight digest">↻ Run digest</button>
+        </div>
+        <div id="insight-content">
+          <div class="insight-placeholder">Click "Run digest" to generate the weekly insight report powered by Gemini (server-side).</div>
+        </div>
+      </div>
+
+      <!-- AGENT ACTIVITY LOG -->
+      <div class="right-panel" role="region" aria-labelledby="log-heading">
+        <div class="right-panel-title" id="log-heading">
+          <span style="color:var(--purple)">⚡</span> Agent Activity
+          <span style="font-size:9px;color:var(--text-muted);font-weight:400;letter-spacing:0.05em;display:block;margin-top:2px">
+            Every line here is a decision an agent made on its own.
+          </span>
+        </div>
+        <div id="agent-log">
+          <div class="log-empty">Agent activity will appear here as tickets are processed.</div>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
